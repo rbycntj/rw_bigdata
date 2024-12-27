@@ -1,0 +1,2 @@
+此处保存embedding_all_school.pkl
+embedding_all_school.pkl保存了所有学校关键词的embedding vector

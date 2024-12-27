@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学校匹配</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        .school {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>学校匹配系统</h1>
+    <label for="name">请输入名字:</label>
+    <input type="text" id="name" placeholder="例如：谢维芬">
+    <button id="submit">提交</button>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('submit').onclick = function() {
+            const name = document.getElementById('name').value;
+            fetch('http://127.0.0.1:8081/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: name })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = ''; // 清空之前的结果
+                if (data.error) {
+                    resultDiv.innerHTML = `<div class="school">错误: ${data.error}</div>`;
+                } else {
+                    for (const key in data) {
+                        const school = data[key].school;
+                        const score = data[key].score.toFixed(4); // 保留四位小数
+                        resultDiv.innerHTML += `<div class="school">学校: ${school}, 匹配分数: ${score}</div>`;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = '<div class="school">请求失败，请重试。</div>';
+            });
+        };
+    </script>
+</body>
+</html>
